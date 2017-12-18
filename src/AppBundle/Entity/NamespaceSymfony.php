@@ -35,6 +35,7 @@ class NamespaceSymfony
      */
     private $url;
 
+
     /**
      * @ORM\OneToMany(targetEntity="InterfaceSymfony", mappedBy="namespace")
      */
@@ -45,6 +46,11 @@ class NamespaceSymfony
      */
     private $classes;
 
+    public function __construct($name, $url)
+    {
+        $this->name = $name;
+        $this->url = $url;
+    }
 
     /**
      * Get id
@@ -54,6 +60,16 @@ class NamespaceSymfony
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -71,13 +87,13 @@ class NamespaceSymfony
     }
 
     /**
-     * Get name
+     * Get url
      *
      * @return string
      */
-    public function getName()
+    public function getUrl()
     {
-        return $this->name;
+        return $this->url;
     }
 
     /**
@@ -92,16 +108,6 @@ class NamespaceSymfony
         $this->url = $url;
 
         return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
     }
 
     /**

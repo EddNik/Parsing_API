@@ -41,6 +41,13 @@ class InterfaceSymfony
      */
     private $namespace;
 
+    public function __construct($name, $url, $namespace)
+    {
+        $this->name = $name;
+        $this->url = $url;
+        $this->namespace = $namespace;
+    }
+
     /**
      * Get id
      *
@@ -49,6 +56,16 @@ class InterfaceSymfony
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -66,13 +83,13 @@ class InterfaceSymfony
     }
 
     /**
-     * Get name
+     * Get url
      *
      * @return string
      */
-    public function getName()
+    public function getUrl()
     {
-        return $this->name;
+        return $this->url;
     }
 
     /**
@@ -87,16 +104,6 @@ class InterfaceSymfony
         $this->url = $url;
 
         return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl()
-    {
-        return $this->url;
     }
 
     /**
