@@ -40,13 +40,6 @@ class ClassSymfony
      */
     private $namespace;
 
-    public function __construct($name, $url, $namespace)
-    {
-        $this->name = $name;
-        $this->url = $url;
-        $this->namespace = $namespace;
-    }
-
     /**
      * Get id
      *
@@ -121,4 +114,3 @@ class ClassSymfony
         $this->namespace = $namespace;
     }
 }
-

@@ -35,7 +35,6 @@ class NamespaceSymfony
      */
     private $url;
 
-
     /**
      * @ORM\OneToMany(targetEntity="InterfaceSymfony", mappedBy="namespace")
      */
@@ -45,12 +44,6 @@ class NamespaceSymfony
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ClassSymfony", mappedBy="namespace")
      */
     private $classes;
-
-    public function __construct($name, $url)
-    {
-        $this->name = $name;
-        $this->url = $url;
-    }
 
     /**
      * Get id
@@ -125,6 +118,4 @@ class NamespaceSymfony
     {
         return $this->classes;
     }
-
 }
-

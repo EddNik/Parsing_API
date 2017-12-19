@@ -2,7 +2,6 @@
 
 namespace AppBundle\Command;
 
-
 use AppBundle\Entity\ClassSymfony;
 use AppBundle\Entity\InterfaceSymfony;
 use AppBundle\Entity\NamespaceSymfony;
@@ -29,6 +28,7 @@ class ParsingCommand extends ContainerAwareCommand
         ]);
 
         $this->recursionSite('http://api.symfony.com/3.4/Symfony.html', 'Symfony');
+
         $output->writeln([
             'Finish',
         ]);
@@ -38,17 +38,16 @@ class ParsingCommand extends ContainerAwareCommand
     {
         $client = new Client();
         $request = $client->get($url);
-        $homepage = (string)$request->getBody();
+        $homepage = (string) $request->getBody();
         $crawler = new Crawler($homepage);
-        $namespacesPage = $crawler->filter('div#page-content > div.namespace-list > a');
-
-
+        $namespacesPage = $crawler->filter('div.namespace-list > a');
 
         $em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        $namespaces = new NamespaceSymfony($name, $url);
+        $namespaces = new NamespaceSymfony();
+        $namespaces
+            ->setName($name)
+            ->setUrl($url);
         $em->persist($namespaces);
-
-
 
         foreach ($namespacesPage as $index) {
             $name = $index->textContent;
@@ -56,32 +55,33 @@ class ParsingCommand extends ContainerAwareCommand
             $this->recursionSite($urlChild, $name);
         }
 
-
-
         $request = $client->get($url);
-        $childPage = (string)$request->getBody();
+        $childPage = (string) $request->getBody();
         $crawler = new Crawler($childPage);
-
-
 
         $classesPage = $crawler->filter('div.row > div.col-md-6 > a');
         foreach ($classesPage as $index) {
             $name = $index->textContent;
             $url = 'http://api.symfony.com/3.4/' . str_replace('../', '', $index->getAttribute("href"));
-            $classes = new ClassSymfony($name, $url, $namespaces);
+            $classes = new ClassSymfony();
+            $classes
+                ->setName($name)
+                ->setUrl($url)
+                ->setNamespace($namespaces);
             $em->persist($classes);
         }
-
-
 
         $interfacesPage = $crawler->filter('div.row > div.col-md-6 > em > a');
         foreach ($interfacesPage as $index) {
             $name = $index->textContent;
             $url = 'http://api.symfony.com/3.4/' . str_replace('../', '', $index->getAttribute("href"));
-            $interfaces = new InterfaceSymfony($name, $url, $namespaces);
+            $interfaces = new InterfaceSymfony();
+            $interfaces
+                ->setName($name)
+                ->setUrl($url)
+                ->setNamespace($namespaces);
             $em->persist($interfaces);
         }
-
 
         unset($crawler);
         $em->flush();
