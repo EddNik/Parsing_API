@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="interface_symfony")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\InterfaceSymfonyRepository")
  */
-class InterfaceSymfony
+class InterfaceSymfony implements PageItemInterface
 {
     /**
      * @var int
