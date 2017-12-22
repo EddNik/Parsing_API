@@ -36,14 +36,14 @@ class ParsingCommand extends ContainerAwareCommand
             '==========================',
         ]);
 
-        $this->recursionSite('http://api.symfony.com/3.4/Symfony.html', 'Symfony');
+        $this->recursionSite('http://api.symfony.com/3.4/Symfony.html', 'Symfony', null, 0);
 
         $output->writeln([
             'Finish',
         ]);
     }
 
-    public function recursionSite($urlCurrent, $nameDirectory)
+    public function recursionSite($urlCurrent, $nameCurrent, $parentID, $level)
     {
         $regexCSSdirectory = "div.namespace-list > a";
         $regexCSSclass = "div.row > div.col-md-6 > a";
@@ -52,21 +52,27 @@ class ParsingCommand extends ContainerAwareCommand
         $pageItemClass = new ClassSymfony();
         $pageItemInterface = new InterfaceSymfony();
 
+        //парсинг очередного неймспейса в базу данных$namespace
         $namespace = new NamespaceSymfony();
-        $namespace->setName($nameDirectory);
+        $namespace->setName($nameCurrent);
         $namespace->setUrl($urlCurrent);
+        $namespace->setParent($parentID);
+        $namespace->setLvl($level);
         $this->em->persist($namespace);
 
         $nodes = $this->createNodes($urlCurrent, $regexCSSdirectory);
 
+        //раскрутка до последнего namespace
         foreach ($nodes as $item) {
-            $name = $item->textContent;
+            $nameCurrent = $item->nodeValue;
             $urlChild = 'http://api.symfony.com/3.4/' . str_replace('../', '', $item->getAttribute("href"));
-            $this->recursionSite($urlChild, $name);
+            $this->recursionSite($urlChild, $nameCurrent, $namespace, $level);
         }
 
-        $this->parseTree($urlCurrent, $regexCSSclass, $nameDirectory, $pageItemClass);
-        $this->parseTree($urlCurrent, $regexCSSinterface, $nameDirectory, $pageItemInterface);
+        //парсинг в базу данных  класов и интерфейсов
+        $this->parseTree($urlCurrent, $regexCSSclass, $namespace, $pageItemClass);
+        $this->parseTree($urlCurrent, $regexCSSinterface, $namespace, $pageItemInterface);
+
         $this->em->flush();
     }
 

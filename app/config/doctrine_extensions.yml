@@ -1,0 +1,37 @@
+services:
+#    acme.demo.example:
+#        class:     Acme\DemoBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+#        calls:
+#            - [setService, ["@service_id"]]
+#        tags:
+#            - { name: twig.extension }
+#            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+# services to handle doctrine extensions
+# import it in config.yml
+services:
+    # KernelRequest listener
+    extension.listener:
+        class: AppBundle\Listener\DoctrineExtensionListener
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
+        tags:
+            # translatable sets locale such as default application locale before command execute
+            - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
+
+    # Doctrine Extension listeners to handle behaviors
+    gedmo.listener.tree:
+        class: Gedmo\Tree\TreeListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
+#
+    gedmo.listener.translatable:
+        class: Gedmo\Translatable\TranslatableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
+            - [ setDefaultLocale, [ %locale% ] ]
+            - [ setTranslationFallback, [ false ] ]

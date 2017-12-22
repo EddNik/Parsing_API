@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * NamespaceSymfony
  *
+ * @Gedmo\Tree(type="nested")
  * @ORM\Table(name="namespace_symfony")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\NamespaceSymfonyRepository")
+ * @ORM\Entity(repositoryClass="Gedmo\Tree\Entity\Repository\NestedTreeRepository")
  */
 class NamespaceSymfony
 {
@@ -20,6 +24,24 @@ class NamespaceSymfony
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @Gedmo\TreeLevel
+     * @ORM\Column(name="level", type="integer")
+     */
+    private $lvl;
+
+    /**
+     * @Gedmo\TreeLeft
+     * @ORM\Column(name="left_key", type="integer")
+     */
+    private $lft;
+
+    /**
+     * @Gedmo\TreeRight
+     * @ORM\Column(name="right_key", type="integer")
+     */
+    private $rgt;
 
     /**
      * @var string
@@ -44,6 +66,18 @@ class NamespaceSymfony
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\ClassSymfony", mappedBy="namespace")
      */
     private $classes;
+
+    /**
+     * @Gedmo\TreeParent
+     * @ORM\ManyToOne(targetEntity="NamespaceSymfony", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
+     */
+    private $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="NamespaceSymfony", mappedBy="parent")
+     */
+    private $children;
 
     /**
      * Get id
@@ -117,5 +151,73 @@ class NamespaceSymfony
     public function getClasses()
     {
         return $this->classes;
+    }
+
+    /**
+     * @param mixed $parent
+     * @return NamespaceSymfony
+     */
+    public function setParent(NamespaceSymfony $parent = null)
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLvl()
+    {
+        return $this->lvl;
+    }
+
+    /**
+     * @param mixed $lvl
+     * @return NamespaceSymfony
+     */
+    public function setLvl($lvl)
+    {
+        $this->lvl = $lvl;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLft()
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @param mixed $lft
+     */
+    public function setLft($lft)
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRgt()
+    {
+        return $this->rgt;
+    }
+
+    /**
+     * @param mixed $rgt
+     */
+    public function setRgt($rgt)
+    {
+        $this->rgt = $rgt;
     }
 }
