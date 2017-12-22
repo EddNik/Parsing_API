@@ -45,12 +45,9 @@ class ParsingCommand extends ContainerAwareCommand
 
     public function recursionSite($urlCurrent, $nameCurrent, $parentID, $level)
     {
-        $regexCSSdirectory = "div.namespace-list > a";
-        $regexCSSclass = "div.row > div.col-md-6 > a";
-        $regexCSSinterface = "div.row > div.col-md-6 > em > a";
-
-        $pageItemClass = new ClassSymfony();
-        $pageItemInterface = new InterfaceSymfony();
+        $xpathNamespace = "div.namespace-list > a";
+        $xpathClass = "div.row > div.col-md-6 > a";
+        $xpathInterface = "div.row > div.col-md-6 > em > a";
 
         //парсинг очередного неймспейса в базу данных$namespace
         $namespace = new NamespaceSymfony();
@@ -60,40 +57,40 @@ class ParsingCommand extends ContainerAwareCommand
         $namespace->setLvl($level);
         $this->em->persist($namespace);
 
-        $nodes = $this->createNodes($urlCurrent, $regexCSSdirectory);
+        $page = $this->getPage($urlCurrent);
 
         //раскрутка до последнего namespace
-        foreach ($nodes as $item) {
+        foreach ($page->filter($xpathNamespace) as $item) {
             $nameCurrent = $item->nodeValue;
             $urlChild = 'http://api.symfony.com/3.4/' . str_replace('../', '', $item->getAttribute("href"));
             $this->recursionSite($urlChild, $nameCurrent, $namespace, $level);
         }
 
         //парсинг в базу данных  класов и интерфейсов
-        $this->parseTree($urlCurrent, $regexCSSclass, $namespace, $pageItemClass);
-        $this->parseTree($urlCurrent, $regexCSSinterface, $namespace, $pageItemInterface);
+        $this->parseTree($page, $xpathClass, $namespace, function (){return new ClassSymfony();});
+        $this->parseTree($page, $xpathInterface, $namespace, function (){return new InterfaceSymfony();});
 
         $this->em->flush();
     }
 
-    public function createNodes($url, $xpath)
+    public function getPage($url)
     {
         $client = new Client();
         $request = $client->get($url);
         $page = (string)$request->getBody();
         $crawler = new Crawler($page);
-        $nodes = $crawler->filter($xpath);
-
-        return $nodes;
+        return $crawler;
     }
 
-    public function parseTree($url, $xpath, NamespaceSymfony $namespace, PageItemInterface $pageItem)
+    public function parseTree(Crawler $page, $xpath, NamespaceSymfony $namespace, callable $pageItemCallback)
     {
-        $nodes = $this->createNodes($url, $xpath);
-
-        foreach ($nodes as $node) {
+        foreach ($page->filter($xpath) as $node) {
             $name = $node->textContent;
             $url = 'http://api.symfony.com/3.4/' . str_replace('../', '', $node->getAttribute("href"));
+            /**
+             * @var PageItemInterface $pageItem
+             */
+            $pageItem = $pageItemCallback();
             $pageItem->setName($name);
             $pageItem->setUrl($url);
             $pageItem->setNamespace($namespace);
