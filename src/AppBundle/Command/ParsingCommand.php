@@ -67,8 +67,12 @@ class ParsingCommand extends ContainerAwareCommand
         }
 
         //парсинг в базу данных  класов и интерфейсов
-        $this->parseTree($page, $xpathClass, $namespace, function (){return new ClassSymfony();});
-        $this->parseTree($page, $xpathInterface, $namespace, function (){return new InterfaceSymfony();});
+        $this->parseTree($page, $xpathClass, $namespace, function () {
+            return new ClassSymfony();
+        });
+        $this->parseTree($page, $xpathInterface, $namespace, function () {
+            return new InterfaceSymfony();
+        });
 
         $this->em->flush();
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -78,6 +79,24 @@ class NamespaceSymfony
      * @ORM\OneToMany(targetEntity="NamespaceSymfony", mappedBy="parent")
      */
     private $children;
+
+    /**
+     * @Gedmo\TreeRoot
+     * @ORM\ManyToOne(targetEntity="NamespaceSymfony")
+     * @ORM\JoinColumn(name="tree_root", referencedColumnName="id", onDelete="CASCADE")
+     */
+    private $root;
+
+
+    /**
+     * NamespaceSymfony constructor.
+     */
+    public function __construct()
+    {
+        $this->classes = new ArrayCollection();
+        $this->interfaces = new ArrayCollection();
+        $this->children = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -219,5 +238,21 @@ class NamespaceSymfony
     public function setRgt($rgt)
     {
         $this->rgt = $rgt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    /**
+     * @param mixed $root
+     */
+    public function setRoot($root)
+    {
+        $this->root = $root;
     }
 }

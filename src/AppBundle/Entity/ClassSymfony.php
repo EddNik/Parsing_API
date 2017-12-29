@@ -3,12 +3,16 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * ClassSymfony
  *
+
+ * @Gedmo\Tree(type="nested")
  * @ORM\Table(name="class_symfony")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\ClassSymfonyRepository")
+ * @ORM\Entity(repositoryClass="Gedmo\Tree\Entity\Repository\NestedTreeRepository")
+ *
  */
 class ClassSymfony implements PageItemInterface
 {
@@ -36,7 +40,27 @@ class ClassSymfony implements PageItemInterface
     private $url;
 
     /**
+     * @Gedmo\TreeLeft
+     * @ORM\Column(name="left_key", type="integer")
+     */
+    private $lft;
+
+    /**
+     * @Gedmo\TreeRight
+     * @ORM\Column(name="right_key", type="integer")
+     */
+    private $rgt;
+
+    /**
+     * @Gedmo\TreeLevel
+     * @ORM\Column(name="level", type="integer")
+     */
+    private $lvl;
+
+    /**
+     * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="NamespaceSymfony", inversedBy="classes")
+     * @ORM\JoinColumn(name="namespace_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $namespace;
 
@@ -112,5 +136,53 @@ class ClassSymfony implements PageItemInterface
     public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLft()
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @param mixed $lft
+     */
+    public function setLft($lft)
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRgt()
+    {
+        return $this->rgt;
+    }
+
+    /**
+     * @param mixed $rgt
+     */
+    public function setRgt($rgt)
+    {
+        $this->rgt = $rgt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLvl()
+    {
+        return $this->lvl;
+    }
+
+    /**
+     * @param mixed $lvl
+     */
+    public function setLvl($lvl)
+    {
+        $this->lvl = $lvl;
     }
 }
