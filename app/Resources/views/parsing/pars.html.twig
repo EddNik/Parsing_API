@@ -1,24 +1,51 @@
+{% extends 'base.html.twig' %}
+
 {% block body %}
 
-<div id="tree"></div>
-<p><a href="{{ path('retrieve') }}">Row Data</a>
+<div class="container">
 
-    {% endblock %}
 
-    {% block stylesheets %}
+    <h3>Tree Namespaces</h3>
+    <button onclick="tree.expandAll()" class="gj-button-md">Expand All</button>
+    <button onclick="tree.collapseAll()" class="gj-button-md">Collapse All</button>
+    <br/><br/>
+    <div id="tree" data-source="{{ path('retrieve') }} "></div>
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
-              integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
-              crossorigin="anonymous">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <h3>Tree Interfaces</h3>
+    <button onclick="$tree1.expandAll()" class="gj-button-md">Expand All</button>
+    <button onclick="$tree1.collapseAll()" class="gj-button-md">Collapse All</button>
+    <br/><br/>
+    <div id="tree1" data-source="{{ path('retrieveInterfaces') }} "></div>
 
-        <link href="http://code.gijgo.com/1.6.0/css/gijgo.css" rel="stylesheet" type="text/css"/>
+    <h3>Tree Classes</h3>
+    <button onclick="$tree2.expandAll()" class="gj-button-md">Expand All</button>
+    <button onclick="$tree2.collapseAll()" class="gj-button-md">Collapse All</button>
+    <br/><br/>
+    <div id="tree2" data-source="{{ path('retrieveClasses') }} "></div>
 
-    {% endblock %}
+    <br>
+    <br>
+    <p><a href="{{ path('retrieve') }}">Row Data</a>
+    <p><a href="{{ path('retrieveInterfaces') }}">Row Data Interface</a>
+    <p><a href="{{ path('retrieveClasses') }}">Row Data Classes</a>
 
-    {% block javascripts %}
+
+        {% endblock %}
+
+        {% block stylesheets %}
+
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+                  integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+                  crossorigin="anonymous">
+            <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+            <link href="http://code.gijgo.com/1.6.0/css/gijgo.css" rel="stylesheet" type="text/css"/>
+
+        {% endblock %}
+
+        {% block javascripts %}
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
                 integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
@@ -31,16 +58,48 @@
         <script type="text/javascript">
             var tree = $('#tree').tree({
                 primaryKey: 'id',
-                childrenField: '__children',
+                childrenField: 'children',
                 iconsLibrary: 'fontawesome',
+                {#// dataSource: '{{ path('retrieve') ,success: onSuccessFunc}}',#}
                 dataSource: '{{ path('retrieve') }}',
                 textField: 'name',
-                border: true
+                dragAndDrop: true,
+                uiLibrary: 'bootstrap4'
             });
             tree.on('dataBound', function () {
-                var node = tree.getNodeByText('Symfony');
-                tree.expand(node);
+                tree.expandAll();
             });
+
+        </script>
+        <script type="text/javascript">
+
+            var $tree1 = $('#tree1').tree({
+                primaryKey: 'id',
+                childrenField: 'children',
+                iconsLibrary: 'fontawesome',
+                dataSource: '{{ path('retrieveInterfaces') }}',
+                textField: 'name',
+                dragAndDrop: true,
+                uiLibrary: 'bootstrap4'
+            });
+            $tree1.on('dataBound', function () {
+                $tree1.expandAll();
+            });
+            var $tree2 = $('#tree2').tree({
+                primaryKey: 'id',
+                childrenField: 'children',
+                iconsLibrary: 'fontawesome',
+                dataSource: '{{ path('retrieveClasses') }}',
+                textField: 'name',
+                dragAndDrop: true,
+                uiLibrary: 'bootstrap4'
+//                    border: true
+            });
+            $tree2.on('dataBound', function () {
+                $tree2.expandAll();
+                //$tree2.selectAll();
+            });
+
         </script>
 
-    {% endblock %}
+{% endblock %}

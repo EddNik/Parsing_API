@@ -15,6 +15,13 @@ security:
 
         main:
             anonymous: ~
+            form_login:
+                            login_path: login
+                            check_path: login
+                            failure_path: http://localhost:8000/parsing
+    access_control:
+                              # require ROLE_ADMIN for /admin*
+                              - { path: ^/admin, roles: ROLE_ADMIN }
             # activate different ways to authenticate
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
